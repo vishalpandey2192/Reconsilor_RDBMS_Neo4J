@@ -31,10 +31,10 @@ class ClearingHouseDb:
             df_name = pd.DataFrame()
 
             with session.begin_transaction() as tx:
-                #query = "Match (n)-[r]-(c) where n.created_at > " + str(starting_date) + " and n.created_at < " + str(
-                 #   ending_date) + " and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 1000"
-                query = "Match (n{order_id:'123456'})-[r]-(c) where labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 100"
-                #print(query)
+                # query = "Match (n)-[r]-(c) where n.created_at > " + str(starting_date) + " and n.created_at < " + str(
+                #    ending_date) + " and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 1000"
+                query = "Match (n{order_id:'3000040'})-[r]-(c) where labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 100"
+                print(query)
 
 
                 for record in tx.run(query):
@@ -79,11 +79,11 @@ class ClearingHouseDb:
                             list_keys.append("order_relationship_type")
 
                             #getting associated phones for contact
-                            query = "Match (n{contact_id:'"+record[3]['contact_id']+\
-                                    "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
-                            for phone_record in tx.run(query):
-                                list_properties.append(phone_record[0]["phone"])
-                                list_keys.append("phone")
+                            # query = "Match (n{contact_id:'"+record[3]['contact_id']+\
+                            #         "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
+                            # for phone_record in tx.run(query):
+                            #     list_properties.append(phone_record[0]["phone"])
+                            #     list_keys.append("phone")
 
                             list_properties.append("has")
                             list_keys.append("phone_relationship_type")
