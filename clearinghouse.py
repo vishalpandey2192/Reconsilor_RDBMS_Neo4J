@@ -120,8 +120,12 @@ class ClearingHouseDb:
                             #     list_keys.append("phone_relationship_type")
                             #     list_properties.append("has")
 
-
-
+                            #getting associated phones for contact
+                            # query = "Match (n{contact_id:'"+record[3]['contact_id']+\
+                            #         "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
+                            # for phone_record in tx.run(query):
+                            #     list_properties.append(phone_record[0]["phone"])
+                            #     list_keys.append("phone")
 
                             list_properties.append(
                                 record[3]['created_at'] if 'created_at' in record[3].keys() else '')
