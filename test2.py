@@ -1,45 +1,45 @@
-import linecache
+from neomodel import (config, StructuredNode, StringProperty, IntegerProperty,
+    UniqueIdProperty, RelationshipTo, RelationshipFrom,db)
 
-def getRequestIfFailed(requestId, start_line):
-    with open("log2.txt") as fp:
-        for end_line, line in enumerate(fp):
-            if line is not None:
-                if "Transaction failed" in line:
-                    id = line.split("-")[-2].split(":")[-1].strip()
-                    if(id==requestId):
-                        json = getFailedJSON(start_line,end_line+1)
-                        return json
-    return ;
+config.DATABASE_URL = 'bolt://neo4j:tanveenisgreatvishalisaight@stage-neo4j.clearlinkdata.com:7687'
+
+class Country(StructuredNode):
+    code = StringProperty(unique_index=True, required=True)
+
+    # traverse incoming IS_FROM relation, inflate to Person objects
+    inhabitant = RelationshipFrom('Person', 'IS_FROM')
 
 
-def getFailedJSON(start_line,end_line):
-    line=''
-    json_end=0
-    json=''
-    for i in range(start_line+1,end_line+1):
-        line = linecache.getline('log2.txt', i)[8:]
-        if line is not None:
-            if "Examining source dictionary" in line:
-                break
-            else:
-                json = json + line
-    return "{"+json
+class Person(StructuredNode):
+    uid = UniqueIdProperty()
+    name = StringProperty(unique_index=True)
+    age = IntegerProperty(index=True, default=0)
 
-def generateDicts(log_fh):
-    start_line = 0
-    requests_dict = {}
-    for line in log_fh:
-        if line is not None:
-            start_line = start_line + 1
-            if "Start RequestId:" in line:
-                requestId=line.split("-")[-1].split(":")[-2].strip()
-                request = getRequestIfFailed(requestId,start_line)
-                if(request != None):
-                    requests_dict[requestId]=request
-    return requests_dict;
+    # traverse outgoing IS_FROM relations, inflate to Country objects
+    country = RelationshipTo(Country, 'IS_FROM')
 
+jim = Person(name='vishal', age=3).save()
+jim.age = 4
+jim.save() # validation happens here
 
-with open("log2.txt") as f:
-    if f is not None:
-        failed_requests_dict = generateDicts(f)
-        print(failed_requests_dict)
+rohan = Person(name='Rohan', age=3).save()
+rohan.age = 4
+rohan.save()
+
+india = Country(code='IND').save()
+india.save() # validation happens here
+
+germany = Country(code='GE').save()
+germany.save()
+
+jim.country.connect(india)
+
+germany.inhabitant.connect(rohan)
+
+results, meta = db.cypher_query('MATCH (n) return n LIMIT 10', '')
+print(results)
+people = [Person.inflate(row[0]) for row in results]
+
+#jim.delete()
+#jim.refresh() # reload properties from neo
+#jim.id # neo4j internal id

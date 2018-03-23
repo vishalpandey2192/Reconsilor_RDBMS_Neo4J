@@ -1,5 +1,5 @@
 from neo4j.v1 import GraphDatabase
-from datetime import datetime , timedelta
+from datetime import datetime, timedelta
 import pandas as pd
 
 
@@ -14,9 +14,13 @@ class ClearingHouseDb:
     def get_last_one_day_data_from_clearinghouse(self):
         with self._driver.session() as session:
             now = datetime.now()
-            now = now.replace(hour=11, minute=59, second=00, microsecond=00)
+
+            # now = now.replace(hour=11, minute=59, second=00, microsecond=00)
             ending_date = now.timestamp()
-            starting_date = (now - timedelta(days=1)).timestamp()
+
+            starting_date = (now - timedelta(days=7
+                                             )).timestamp()
+            print(starting_date, " ", ending_date)
 
             result_order_json = {}
             row = []
@@ -31,25 +35,34 @@ class ClearingHouseDb:
             df_name = pd.DataFrame()
 
             with session.begin_transaction() as tx:
-                #query = "Match (n)-[r]-(c) where n.created_at > " + str(starting_date) + " and n.created_at < " + str(
-                 #   ending_date) + " and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 1000"
-                query = "Match (n{order_id:'123456'})-[r]-(c) where labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 100"
-                #print(query)
-
+                query = "Match (n)-[r]-(c) where n.created_at > " + str(
+                    int(starting_date)) + "000" + " and n.created_at < " + str(
+                    int(
+                        ending_date)) + "000" + " and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 450"
+                # query = "Match (n{order_id:'123457'})-[r]-(c) where labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 100"
+                print(query)
 
                 for record in tx.run(query):
-                    if(row is not None):
+                    if (row is not None):
 
                         if (record[1]['order_id'] not in row):
                             row.append(record[1]['order_id'])
                             list_properties = [record[1]['order_id']]
                             list_keys = ['order_id']
-                            list_properties.append(record[1]['source_publisher'] if 'source_publisher' in record[1].keys() else '')
+                            list_properties.append(
+                                record[1]['source_publisher'] if 'source_publisher' in record[1].keys() else '')
                             list_keys.append('source_publisher')
+                            list_properties.append(
+                                record[1]['created_at'] if 'created_at' in record[1].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[1]['updated_at'] if 'updated_at' in record[1].keys() else '')
+                            list_keys.append('updated_at')
                             df_o = pd.DataFrame([list_properties], columns=list_keys)
                             df_order = df_order.append(df_o)
 
-                        if(str(record[2]) == "['address']"):
+                        if (str(record[2]) == "['address']"):
+                            # print("add",record[3])
                             list_properties = [record[1]['order_id']]
                             list_keys = ['order_id']
                             list_properties.append(record[3]['address'] if 'address' in record[3].keys() else '')
@@ -64,7 +77,13 @@ class ClearingHouseDb:
                             list_keys.append('country')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
-                            df_a = pd.DataFrame([list_properties],columns=list_keys)
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
+                            df_a = pd.DataFrame([list_properties], columns=list_keys)
                             df_address = df_address.append(df_a)
 
                         if (str(record[2]) == "['contact']"):
@@ -78,18 +97,45 @@ class ClearingHouseDb:
                             list_properties.append(record[4])
                             list_keys.append("order_relationship_type")
 
-                            #getting associated phones for contact
-                            query = "Match (n{contact_id:'"+record[3]['contact_id']+\
-                                    "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
-                            for phone_record in tx.run(query):
-                                list_properties.append(phone_record[0]["phone"])
-                                list_keys.append("phone")
+                            # try:
+                            #     query = "Match (n{contact_id:'" + record[3][
+                            #     'contact_id'] + "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
+                            #     print(query)
+                            #     x = tx.run(query)
+                            # except KeyError:
+                            #     pass
+                            # # print(x.peek())
+                            # if not x.peek():
+                            #     print("hi i m tanveen")
+                            #     list_keys.append("phone")
+                            #     list_properties.append('')
+                            #     list_keys.append("phone_relationship_type")
+                            #     list_properties.append('')
+                            # else:
+                            #     print("hi i m not tanveen")
+                            #     list_keys.append("phone")
+                            #     for phone_record in x:
+                            #         print("abc")
+                            #         list_properties.append(phone_record[0]["phone"])
+                            #     list_keys.append("phone_relationship_type")
+                            #     list_properties.append("has")
 
-                            list_properties.append("has")
-                            list_keys.append("phone_relationship_type")
+
+
+
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
+                            print(list_properties)
+                            print(list_keys)
                             df_c = pd.DataFrame([list_properties], columns=list_keys)
+
                             df_contact = df_contact.append(df_c)
 
+                        # print("phone",record[2])
                         if (str(record[2]) == "['phone']"):
                             list_properties = [record[1]['order_id']]
                             list_keys = ['order_id']
@@ -99,6 +145,12 @@ class ClearingHouseDb:
                             list_keys.append('type')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_p = pd.DataFrame([list_properties], columns=list_keys)
                             df_phone = df_phone.append(df_p)
 
@@ -109,6 +161,12 @@ class ClearingHouseDb:
                             list_keys.append('name')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_n = pd.DataFrame([list_properties], columns=list_keys)
                             df_name = df_name.append(df_n)
 
@@ -119,6 +177,12 @@ class ClearingHouseDb:
                             list_keys.append('birth_date')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_bd = pd.DataFrame([list_properties], columns=list_keys)
                             df_birth_date = df_birth_date.append(df_bd)
 
@@ -129,6 +193,12 @@ class ClearingHouseDb:
                             list_keys.append('email')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_e = pd.DataFrame([list_properties], columns=list_keys)
                             df_email = df_email.append(df_e)
 
@@ -139,33 +209,46 @@ class ClearingHouseDb:
                             list_keys.append('agent_id')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_a = pd.DataFrame([list_properties], columns=list_keys)
                             df_agent = df_agent.append(df_a)
 
                         if (str(record[2]) == "['customer_fuse']"):
                             list_properties = [record[1]['order_id']]
                             list_keys = ['order_id']
-                            list_properties.append(record[3]['customer_id'] if 'customer_id' in record[3].keys() else '')
+                            list_properties.append(
+                                record[3]['customer_id'] if 'customer_id' in record[3].keys() else '')
                             list_keys.append('customer_id')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
+                            list_properties.append(
+                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            list_keys.append('created_at')
+                            list_properties.append(
+                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            list_keys.append('updated_at')
                             df_c = pd.DataFrame([list_properties], columns=list_keys)
                             df_customer_fuse = df_customer_fuse.append(df_c)
 
-                    order_id = record[1]['order_id']
-                    if(order_id != None and order_id != ''):
-
-                         if order_id in result_order_json.keys():
-                             orders_properties_dict = result_order_json[order_id]
-                             record[3]['relation_type'] = record[4]
-                             orders_properties_dict[str(record[2])] = record[3]
-                             result_order_json[order_id] = orders_properties_dict
-                         else:
-
-                             orders_properties_dict = {}
-                             record[3]['relation_type'] = record[4]
-                             orders_properties_dict[str(record[2])] = record[3]
-                             result_order_json[order_id] = orders_properties_dict
+                            # order_id = record[1]['order_id']
+                            # if(order_id != None and order_id != ''):
+                            #
+                            #      if order_id in result_order_json.keys():
+                            #          orders_properties_dict = result_order_json[order_id]
+                            #          record[3]['relation_type'] = record[4]
+                            #          orders_properties_dict[str(record[2])] = record[3]
+                            #          result_order_json[order_id] = orders_properties_dict
+                            #      else:
+                            #
+                            #          orders_properties_dict = {}
+                            #          record[3]['relation_type'] = record[4]
+                            #          orders_properties_dict[str(record[2])] = record[3]
+                            #          result_order_json[order_id] = orders_properties_dict
 
                 print(df_order)
                 print("--------------------------------------------------------")
@@ -183,6 +266,5 @@ class ClearingHouseDb:
                 print("--------------------------------------------------------")
                 print(df_agent)
                 print("--------------------------------------------------------")
-                return {'order':df_order,'address':df_address,'contact':df_contact,'birth_date':df_birth_date,
-                        'email':df_email,'customer_fuse':df_customer_fuse,'phone':df_phone,'agent':df_agent}
-
+                return {'order': df_order, 'address': df_address, 'contact': df_contact, 'birth_date': df_birth_date,
+                        'email': df_email, 'customer_fuse': df_customer_fuse, 'phone': df_phone, 'agent': df_agent}
