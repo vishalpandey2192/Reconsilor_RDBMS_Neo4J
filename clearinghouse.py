@@ -5,7 +5,6 @@ import pandas as pd
 
 class ClearingHouseDb:
     def __init__(self, uri, user, password):
-        print("hi")
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
 
     def close(self):
@@ -20,7 +19,6 @@ class ClearingHouseDb:
 
             starting_date = (now - timedelta(days=7
                                              )).timestamp()
-            print(starting_date, " ", ending_date)
 
             result_order_json = {}
             row = []
@@ -40,7 +38,7 @@ class ClearingHouseDb:
                     int(
                         ending_date)) + "000" + " and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 450"
                 # query = "Match (n{order_id:'123457'})-[r]-(c) where labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 100"
-                print(query)
+                # print(query)
 
                 for record in tx.run(query):
                     if (row is not None):
@@ -52,6 +50,9 @@ class ClearingHouseDb:
                             list_properties.append(
                                 record[1]['source_publisher'] if 'source_publisher' in record[1].keys() else '')
                             list_keys.append('source_publisher')
+                            list_properties.append(
+                                record[1]['time_order_created'] if 'time_order_created' in record[1].keys() else '')
+                            list_keys.append('time_order_created')
                             list_properties.append(
                                 record[1]['created_at'] if 'created_at' in record[1].keys() else '')
                             list_keys.append('created_at')
@@ -67,6 +68,8 @@ class ClearingHouseDb:
                             list_keys = ['order_id']
                             list_properties.append(record[3]['address'] if 'address' in record[3].keys() else '')
                             list_keys.append('address')
+                            list_properties.append(record[3]['address_type'] if 'address_type' in record[3].keys() else '')
+                            list_keys.append('address_type')
                             list_properties.append(record[3]['zip_code'] if 'zip_code' in record[3].keys() else '')
                             list_keys.append('zip_code')
                             list_properties.append(record[3]['city'] if 'city' in record[3].keys() else '')
@@ -91,41 +94,28 @@ class ClearingHouseDb:
                             list_keys = ['order_id']
                             list_properties.append(record[3]['contact_id'] if 'contact_id' in record[3].keys() else '')
                             list_keys.append('contact_id')
+                            list_properties.append(record[3]['time_start_contact'] if 'time_start_contact' in record[3].keys() else '')
+                            list_keys.append('time_start_contact')
                             list_properties.append(
                                 record[3]['master_contact_id'] if 'master_contact_id' in record[3].keys() else '')
                             list_keys.append('master_contact_id')
                             list_properties.append(record[4])
                             list_keys.append("order_relationship_type")
 
-                            # try:
-                            #     query = "Match (n{contact_id:'" + record[3][
-                            #     'contact_id'] + "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
-                            #     print(query)
-                            #     x = tx.run(query)
-                            # except KeyError:
-                            #     pass
-                            # # print(x.peek())
-                            # if not x.peek():
-                            #     print("hi i m tanveen")
-                            #     list_keys.append("phone")
-                            #     list_properties.append('')
-                            #     list_keys.append("phone_relationship_type")
-                            #     list_properties.append('')
-                            # else:
-                            #     print("hi i m not tanveen")
-                            #     list_keys.append("phone")
-                            #     for phone_record in x:
-                            #         print("abc")
-                            #         list_properties.append(phone_record[0]["phone"])
-                            #     list_keys.append("phone_relationship_type")
-                            #     list_properties.append("has")
-
                             #getting associated phones for contact
-                            # query = "Match (n{contact_id:'"+record[3]['contact_id']+\
-                            #         "'})-[r:has]-(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
-                            # for phone_record in tx.run(query):
-                            #     list_properties.append(phone_record[0]["phone"])
-                            #     list_keys.append("phone")
+                            query = "Match (n{contact_id:"+str(record[3]['contact_id'])+"})-[r:has]->(c:phone) where labels(n)=['contact'] return DISTINCT properties(c)"
+                            print(query)
+                            result = tx.run(query)
+                            if result.peek() != None:
+                                for phone_record in tx.run(query):
+                                    list_properties.append(phone_record[0]["phone"])
+                                    list_keys.append("phone")
+                            else:
+                                list_properties.append('')
+                                list_keys.append("phone")
+
+                            list_properties.append('has')
+                            list_keys.append("phone_relationship_type")
 
                             list_properties.append(
                                 record[3]['created_at'] if 'created_at' in record[3].keys() else '')
@@ -133,8 +123,6 @@ class ClearingHouseDb:
                             list_properties.append(
                                 record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
                             list_keys.append('updated_at')
-                            print(list_properties)
-                            print(list_keys)
                             df_c = pd.DataFrame([list_properties], columns=list_keys)
 
                             df_contact = df_contact.append(df_c)
@@ -213,12 +201,12 @@ class ClearingHouseDb:
                             list_keys.append('agent_id')
                             list_properties.append(record[4])
                             list_keys.append("relationship")
-                            list_properties.append(
-                                record[3]['created_at'] if 'created_at' in record[3].keys() else '')
-                            list_keys.append('created_at')
-                            list_properties.append(
-                                record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
-                            list_keys.append('updated_at')
+                            # list_properties.append(
+                            #     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
+                            # list_keys.append('created_at')
+                            # list_properties.append(
+                            #     record[3]['updated_at'] if 'updated_at' in record[3].keys() else '')
+                            # list_keys.append('updated_at')
                             df_a = pd.DataFrame([list_properties], columns=list_keys)
                             df_agent = df_agent.append(df_a)
 

@@ -3,9 +3,9 @@ from clearinghouse import ClearingHouseDb as ClearingHouseDb
 from backfilling_clearinghouse import  BackFillingClearingHouse as BackFillingClearingHouse
 
 def main():
-    uri = "bolt://stage-neo4j.clearlinkdata.com:7687"
-    user = "tanveen"
-    password = "tanveenisgreatvishalisaight"
+    uri = "bolt://uat-neo4j.clearlinkdata.com:7687"
+    user = "neo4j"
+    password = "infoman!1cl"
     now = datetime.now()
     now = now.replace(hour=11, minute=59, second=00, microsecond=00)
     ending_date = now.timestamp()
