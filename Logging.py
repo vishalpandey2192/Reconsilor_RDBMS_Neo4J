@@ -10,9 +10,6 @@ class Logging:
         self.logger.addHandler(self.handler)
 
     def set_log_message(self, msg, level):
-        # update records here
-        # FORMAT = '%(asctime)-15s'
-        # logging.basicConfig(format=FORMAT)
         if level == 'error':
             self.logger.setLevel(logging.ERROR)
             self.handler.setLevel(logging.ERROR)
@@ -22,4 +19,3 @@ class Logging:
             self.logger.setLevel(logging.INFO)
             self.handler.setLevel(logging.INFO)
             self.logger.info(msg)
-

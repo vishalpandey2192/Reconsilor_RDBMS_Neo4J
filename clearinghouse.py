@@ -80,7 +80,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['country'] if 'country' in record[3].keys() else '')
                                 list_keys.append('country')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')
@@ -137,7 +137,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['type'] if 'type' in record[3].keys() else '')
                                 list_keys.append('type')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')
@@ -153,7 +153,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['name'] if 'name' in record[3].keys() else '')
                                 list_keys.append('name')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')
@@ -169,7 +169,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['birth_date'] if 'birth_date' in record[3].keys() else '')
                                 list_keys.append('birth_date')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')
@@ -185,7 +185,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['email'] if 'email' in record[3].keys() else '')
                                 list_keys.append('email')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')
@@ -201,7 +201,7 @@ class ClearingHouseDb:
                                 list_properties.append(record[3]['agent_id'] if 'agent_id' in record[3].keys() else '')
                                 list_keys.append('agent_id')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 # list_properties.append(
                                 #     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 # list_keys.append('created_at')
@@ -218,7 +218,7 @@ class ClearingHouseDb:
                                     record[3]['customer_id'] if 'customer_id' in record[3].keys() else '')
                                 list_keys.append('customer_id')
                                 list_properties.append(record[4])
-                                list_keys.append("relationship")
+                                list_keys.append("relation_type")
                                 list_properties.append(
                                     record[3]['created_at'] if 'created_at' in record[3].keys() else '')
                                 list_keys.append('created_at')

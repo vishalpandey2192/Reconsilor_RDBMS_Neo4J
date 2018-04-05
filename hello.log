@@ -524,3 +524,34 @@
 2018-04-05 00:25:27,567 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522909527563, updated_at:1522909527563}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
 2018-04-05 00:25:27,567 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522909527563, updated_at:1522909527563}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
 2018-04-05 00:25:27,567 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522909527563, updated_at:1522909527563}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:31,923 - clearinghouse - INFO - Ran the following query to get past 24hrs order data, Match (n)-[r]-(c) where n.created_at > 1522349731000 and n.created_at < 1522954531000 and labels(n)=['order'] return DISTINCT labels(n), properties(n), labels(c),properties(c), type(r) limit 450
+2018-04-05 12:55:33,075 - backfilling_clearinghouse_2 - INFO - Mismatch data to be updated/created in graphdb [{'DN-3679213': {'order': {'order_id': 'DN-3679213', 'source_publisher': 'FUSE', 'time_order_created': '1234567788'}, 'agent': [{'agent_id': '1009', 'relation_type': 'created'}]}}]
+2018-04-05 12:55:33,084 - backfilling_clearinghouse_2 - INFO - Mismatch data to be updated/created in graphdb [{'DN-3679213': {'order': {'order_id': 'DN-3679213', 'source_publisher': 'FUSE', 'time_order_created': '1234567788'}, 'agent': [{'agent_id': '1009', 'relation_type': 'created'}]}}]
+2018-04-05 12:55:33,523 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 will be UPDATED
+2018-04-05 12:55:33,523 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 will be UPDATED
+2018-04-05 12:55:33,533 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 will be UPDATED
+2018-04-05 12:55:33,533 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 will be UPDATED
+2018-04-05 12:55:33,597 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,597 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,597 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,608 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,608 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,608 - backfilling_clearinghouse_2 - INFO - Order Id: DN-3679213 properties ADDED : {agent_id : '1009'}
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969})
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969})
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969})
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969})
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:33,970 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954533969, updated_at:1522954533969}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006})
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006})
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006})
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MERGE (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006})
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
+2018-04-05 12:55:34,007 - backfilling_clearinghouse_2 - INFO - Executing query : MATCH (x:agent{agent_id : '1009', created_at:1522954534006, updated_at:1522954534006}), (n:order) WHERE n.order_id = 'DN-3679213' MERGE(x)-[r:created]->(n) return r
