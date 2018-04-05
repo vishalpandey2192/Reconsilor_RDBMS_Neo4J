@@ -96,9 +96,10 @@ def checkFrames2(fuse_input_df,graph_input_df,type):
         for id_val in fuse_input_df.index:
             if id_val in graph_input_df.index:
                 for column in graph_input_df:
-                    if fuse_input_df.loc[id_val][column] != graph_input_df.loc[id_val][column]:
-                        create_missing_node_data(type,fuse_input_df.loc[id_val])
-                        break
+                    if column != 'created_at' or column != 'updated_at':
+                        if fuse_input_df.loc[id_val][column] != graph_input_df.loc[id_val][column]:
+                            create_missing_node_data(type,fuse_input_df.loc[id_val])
+                            break
 
             else:
                 #all to the list to be added
@@ -147,8 +148,9 @@ def checkFrames(fuse_input_df,graph_input_df,type):
                 if len(fuse_shape)!=2 and len(graph_shape)!=2 and id_val not in seen:
                     seen.append(id_val)
                     for column in graph_input_df:
-                        if fuse_id_data[column]!=graph_id_data[column]:
-                            create_missing_node_data(type, fuse_input_df.loc[id_val])
+                        if column != 'created_at' or column != 'updated_at':
+                            if fuse_id_data[column]!=graph_id_data[column]:
+                                create_missing_node_data(type, fuse_input_df.loc[id_val])
                 elif id_val not in seen:
                     seen.append(id_val)
                     # print(fuse_id_data)
@@ -158,9 +160,10 @@ def checkFrames(fuse_input_df,graph_input_df,type):
                         if len(graph_shape)!=2:
                             #print(graph_id_data)
                             for column in temp:
-                                if temp[column][0] != graph_id_data[column]:
-                                    create_missing_node_data(type,temp.loc[id_val])
-                                    break
+                                if column != 'created_at' or column != 'updated_at':
+                                    if temp[column][0] != graph_id_data[column]:
+                                        create_missing_node_data(type,temp.loc[id_val])
+                                        break
                         # print(temp)
 
 

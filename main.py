@@ -1,4 +1,5 @@
 from datetime import datetime
+from read_From_Fuse import fetch_from_fuse
 from clearinghouse import ClearingHouseDb as ClearingHouseDb
 from backfilling_clearinghouse_2 import  BackFillingClearingHouse as BackFillingClearingHouse
 from Logging import Logging
@@ -11,11 +12,14 @@ def main():
     now = datetime.now()
     now = now.replace(hour=11, minute=59, second=00, microsecond=00)
     ending_date = now.timestamp()
-    print(ending_date)
+    # print(ending_date)
     clearinghouse_obj= None
     try:
         clearinghouse_obj = ClearingHouseDb(uri, user, password)
-        clearinghouse_obj.get_last_one_day_data_from_clearinghouse()
+        graph_data = clearinghouse_obj.get_last_one_day_data_from_clearinghouse()
+        fuse_data = fetch_from_fuse()
+        print(graph_data["order"])
+        print(fuse_data["order"])
         backfill_obj = BackFillingClearingHouse(uri, user, password)
         backfill_obj.backfill_clearinghouse(data={})
     except :

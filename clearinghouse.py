@@ -243,22 +243,22 @@ class ClearingHouseDb:
                                 #          orders_properties_dict[str(record[2])] = record[3]
                                 #          result_order_json[order_id] = orders_properties_dict
 
-                    print(df_order)
-                    print("--------------------------------------------------------")
-                    print(df_address)
-                    print("--------------------------------------------------------")
-                    print(df_contact)
-                    print("--------------------------------------------------------")
-                    print(df_birth_date)
-                    print("--------------------------------------------------------")
-                    print(df_email)
-                    print("--------------------------------------------------------")
-                    print(df_customer_fuse)
-                    print("--------------------------------------------------------")
-                    print(df_phone)
-                    print("--------------------------------------------------------")
-                    print(df_agent)
-                    print("--------------------------------------------------------")
+                    # print(df_order)
+                    # print("--------------------------------------------------------")
+                    # print(df_address)
+                    # print("--------------------------------------------------------")
+                    # print(df_contact)
+                    # print("--------------------------------------------------------")
+                    # print(df_birth_date)
+                    # print("--------------------------------------------------------")
+                    # print(df_email)
+                    # print("--------------------------------------------------------")
+                    # print(df_customer_fuse)
+                    # print("--------------------------------------------------------")
+                    # print(df_phone)
+                    # print("--------------------------------------------------------")
+                    # print(df_agent)
+                    # print("--------------------------------------------------------")
                     return {'order': df_order, 'address': df_address, 'contact': df_contact, 'birth_date': df_birth_date,
                             'email': df_email, 'customer_fuse': df_customer_fuse, 'phone': df_phone, 'agent': df_agent}
             except:
