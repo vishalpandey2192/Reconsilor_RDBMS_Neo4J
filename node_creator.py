@@ -1,12 +1,14 @@
+from Logging import Logging
 
 data={}
 def create_missing_node_data(type,input):
-    node_order_id=input['order_id']
+    print(type,input)
+    node_order_id=str(input['order_id'])
     cols = input.index
     if node_order_id not in data:
         data[node_order_id]={}
 
-    if type != 'order' or type != 'name':
+    if type != 'order' and type != 'name' and type != 'customer_fuse':
 
         if type not in data[node_order_id]:
             data[node_order_id][type] = []
@@ -22,8 +24,16 @@ def create_missing_node_data(type,input):
     # print(data)
 
 def push_to_be_created_nodes():
-    print(data)
-    return
+    logging = Logging(__name__)
+    logging.set_log_message("Data Sent to the neo4j driver to create/update ", 'info')
+    maha_data=[]
+    for k in data:
+        print(data[k])
+        new_list={}
+        new_list[k]=data[k]
+        maha_data.append(new_list)
+    print("maha_data",maha_data)
+    return maha_data
 
 
     # print(type)

@@ -5,16 +5,14 @@ from fuseColumns import order as order_req_cols
 from fuseColumns import order_phone as order_phone_req_cols
 from fuseColumns import order_address as order_address_req_cols
 from fuseColumns import order_emails as order_email_req_cols
+from Logging import Logging
 import pandas as pd
 import pymysql
 
 # today = str(date.today())
 # print(today)
 
-now = datetime.now()
-now = now.replace(hour=11, minute=59, second=00, microsecond=00)
-ending_date = now
-starting_date = (now - timedelta(days=35))
+
 
 
 hostname = 'localhost'
@@ -33,21 +31,20 @@ def get_timestamp(datetime):
     # print(datetime.timestamp()*1000)
     return int(datetime.timestamp())
 
-def fetch_from_fuse():
+def fetch_from_fuse(starting_date,ending_date):
     print("running fetch from fuse")
     myConnection = pymysql.connect(host=hostname, user=username, passwd=password, db=database)
 
     #fetch all orders
-    query = "SELECT "+ ','.join(order_req_cols)+" FROM orders WHERE created_at < '" + str(starting_date)+"'"
-    print("query",query)
-    order_df = pd.read_sql(query, con=myConnection)
+    query_order = "SELECT "+ ','.join(order_req_cols)+" FROM orders WHERE created_at BETWEEN '"+ str(starting_date) + "' AND '" + str(ending_date)+"'"
+    logging = Logging(__name__)
+    logging.set_log_message("Ran the following query to get Fuse Orders Data, " + query_order, 'info')
+    print("query",query_order)
+    order_df = pd.read_sql(query_order, con=myConnection)
     order_df['source_publisher'] = 'FUSE'
     order_df['time_order_created'] = ''
     order_df['created_at'] = order_df['created_at'].apply(get_timestamp)
     order_df['updated_at'] = order_df['updated_at'].apply(get_timestamp)
-
-
-
 
     #Extract other data frames from orders
 
@@ -85,7 +82,10 @@ def fetch_from_fuse():
     # print(order_customer_fuse)
 
     #fetch_all_phones
-    order_phone = pd.read_sql("SELECT "+ ','.join(order_phone_req_cols)+" FROM order_phone_numbers WHERE created_at < '" + str(starting_date)+"'", con=myConnection)
+    phone_query = "SELECT "+ ','.join(order_phone_req_cols)+" FROM order_phone_numbers WHERE created_at BETWEEN '"+ str(starting_date) + "' AND '" + str(ending_date)+"'"
+    order_phone = pd.read_sql(phone_query, con=myConnection)
+    logging = Logging(__name__)
+    logging.set_log_message("Ran the following query to get Fuse Phone Data, " + phone_query, 'info')
     order_phone['relation_type'] = 'has'
     dp = {1: 'primary', 2: 'home', 3: 'cell', 4: 'office', 5: 'alternative'}
     order_phone["phone_type_id"].replace(dp, inplace=True)
@@ -97,7 +97,11 @@ def fetch_from_fuse():
     # print(order_phone)
 
     #fetch_all_address
-    order_address = pd.read_sql("SELECT "+ ','.join(order_address_req_cols)+" FROM order_addresses WHERE created_at < '" + str(starting_date)+"'", con=myConnection)
+    query_address = "SELECT "+ ','.join(order_address_req_cols)+" FROM order_addresses WHERE created_at BETWEEN '"+ str(starting_date) + "' AND '" + str(ending_date)+"'"
+    order_address = pd.read_sql(query_address, con=myConnection)
+    logging = Logging(__name__)
+    logging.set_log_message("Ran the following query to get Fuse Address Data, " + query_address, 'info')
+
     order_address['relation_type'] = 'has'
     order_address['country'] = 'USA'
     order_address = order_address.replace([None], [''], regex=True)
@@ -106,14 +110,17 @@ def fetch_from_fuse():
     order_address.rename(columns={"postal_code": "zip_code"},inplace=True)
     di = {1:'primary',2:'residential',3:'shipping',4:'billing',5:'service'}
     order_address["address_type_id"].replace(di, inplace=True)
-    order_address.rename(columns={"address_type_id": "type"},inplace=True)
+    order_address.rename(columns={"address_type_id": "address_type"},inplace=True)
     order_address['created_at'] = order_address['created_at'].apply(get_timestamp)
     order_address['updated_at'] = order_address['updated_at'].apply(get_timestamp)
     # print("Fuse Address")
     # print(order_address)
 
     #fetch_email_address
-    order_email = pd.read_sql("SELECT "+ ','.join(order_email_req_cols)+" FROM order_emails WHERE created_at < '" + str(starting_date)+"'", con=myConnection)
+    query_email = "SELECT "+ ','.join(order_email_req_cols)+" FROM order_emails WHERE created_at BETWEEN '"+ str(starting_date) + "' AND '" + str(ending_date)+"'"
+    order_email = pd.read_sql(query_email, con=myConnection)
+    logging = Logging(__name__)
+    logging.set_log_message("Ran the following query to get Fuse Email Data, " + query_email, 'info')
     order_email['relation_type'] = 'has'
     order_email['created_at'] = order_email['created_at'].apply(get_timestamp)
     order_email['updated_at'] = order_email['updated_at'].apply(get_timestamp)
@@ -121,18 +128,26 @@ def fetch_from_fuse():
     # print(order_email)
 
 
-
-    order_contact = pd.read_sql("select order_id,interaction_type_value,interaction_type_secondary_value,dialed_number,name,interactions.created_at,interactions.updated_at from verizon.interaction_order LEFT JOIN verizon.orders on verizon.interaction_order.order_id = verizon.orders.id LEFT JOIN verizon.order_statuses on verizon.orders.order_status_id = verizon.order_statuses.id LEFT JOIN fusecore.interactions ON verizon.interaction_order.interaction_id = fusecore.interactions.id WHERE interaction_type_id = 1 AND interactions.created_at < '" + str(starting_date)+"'", con=myConnection)
+    contact_query = "select order_id,interaction_type_value,interaction_type_secondary_value,dialed_number,name,interactions.created_at,interactions.updated_at from verizon.interaction_order LEFT JOIN verizon.orders on verizon.interaction_order.order_id = verizon.orders.id LEFT JOIN verizon.order_statuses on verizon.orders.order_status_id = verizon.order_statuses.id LEFT JOIN fusecore.interactions ON verizon.interaction_order.interaction_id = fusecore.interactions.id WHERE interaction_type_id = 1 AND interactions.created_at BETWEEN '"+ str(starting_date) + "' AND '" + str(ending_date)+"'"
+    order_contact = pd.read_sql(contact_query, con=myConnection)
+    logging = Logging(__name__)
+    logging.set_log_message("Ran the following query to get Fuse Contact Data, " + contact_query, 'info')
     order_contact['phone_relation_type'] = 'has'
+    order_contact['time_start_contact'] = ''
     order_contact['created_at'] = order_contact['created_at'].apply(get_timestamp)
     order_contact['updated_at'] = order_contact['updated_at'].apply(get_timestamp)
+    order_contact.rename(columns={"name": "order_relation_type"},inplace=True)
+    order_contact.rename(columns={"dialed_number": "phone"},inplace=True)
+    order_contact.rename(columns={"interaction_type_value": "contact_id"},inplace=True)
+    order_contact.rename(columns={"interaction_type_secondary_value": "master_contact_id"},inplace=True)
+
     # print("Fuse Contact")
     # print(order_contact)
 
     myConnection.close()
 
-    return {'order': order_df.head(), 'address': order_address.head(), 'contact': order_contact.head(),
-            'email': order_email.head(), 'customer_fuse': order_customer_fuse.head(), 'phone': order_phone.head(), 'agent': order_agent.head()}
+    return {'order': order_df, 'address': order_address, 'contact': order_contact,
+            'email': order_email, 'customer_fuse': order_customer_fuse, 'phone': order_phone, 'agent': order_agent, 'name':order_name}
 
 
 # fetch_from_fuse()
