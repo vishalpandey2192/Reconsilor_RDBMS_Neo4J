@@ -31,6 +31,9 @@ def get_timestamp(datetime):
     # print(datetime.timestamp()*1000)
     return int(datetime.timestamp())
 
+def add_client_to_order(order_id):
+    return "VZN-"+str(order_id)
+
 def fetch_from_fuse(starting_date,ending_date):
     print("running fetch from fuse")
     myConnection = pymysql.connect(host=hostname, user=username, passwd=password, db=database)
@@ -41,6 +44,7 @@ def fetch_from_fuse(starting_date,ending_date):
     logging.set_log_message("Ran the following query to get Fuse Orders Data, " + query_order, 'info')
     print("query",query_order)
     order_df = pd.read_sql(query_order, con=myConnection)
+    order_df['id']=order_df['id'].apply(add_client_to_order)
     order_df['source_publisher'] = 'FUSE'
     order_df['time_order_created'] = ''
     order_df['created_at'] = order_df['created_at'].apply(get_timestamp)
@@ -87,6 +91,7 @@ def fetch_from_fuse(starting_date,ending_date):
     logging = Logging(__name__)
     logging.set_log_message("Ran the following query to get Fuse Phone Data, " + phone_query, 'info')
     order_phone['relation_type'] = 'has'
+    order_phone['order_id']=order_phone['order_id'].apply(add_client_to_order)
     dp = {1: 'primary', 2: 'home', 3: 'cell', 4: 'office', 5: 'alternative'}
     order_phone["phone_type_id"].replace(dp, inplace=True)
     order_phone.rename(columns={"phone_number": "phone"}, inplace=True)
@@ -102,6 +107,7 @@ def fetch_from_fuse(starting_date,ending_date):
     logging = Logging(__name__)
     logging.set_log_message("Ran the following query to get Fuse Address Data, " + query_address, 'info')
 
+    order_address['order_id']=order_address['order_id'].apply(add_client_to_order)
     order_address['relation_type'] = 'has'
     order_address['country'] = 'USA'
     order_address = order_address.replace([None], [''], regex=True)
@@ -121,6 +127,7 @@ def fetch_from_fuse(starting_date,ending_date):
     order_email = pd.read_sql(query_email, con=myConnection)
     logging = Logging(__name__)
     logging.set_log_message("Ran the following query to get Fuse Email Data, " + query_email, 'info')
+    order_email['order_id']=order_email['order_id'].apply(add_client_to_order)
     order_email['relation_type'] = 'has'
     order_email['created_at'] = order_email['created_at'].apply(get_timestamp)
     order_email['updated_at'] = order_email['updated_at'].apply(get_timestamp)
@@ -132,6 +139,7 @@ def fetch_from_fuse(starting_date,ending_date):
     order_contact = pd.read_sql(contact_query, con=myConnection)
     logging = Logging(__name__)
     logging.set_log_message("Ran the following query to get Fuse Contact Data, " + contact_query, 'info')
+    order_contact['order_id']=order_contact['order_id'].apply(add_client_to_order)
     order_contact['phone_relation_type'] = 'has'
     order_contact['time_start_contact'] = ''
     order_contact['created_at'] = order_contact['created_at'].apply(get_timestamp)

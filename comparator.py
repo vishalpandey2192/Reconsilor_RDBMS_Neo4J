@@ -1,7 +1,7 @@
 import pandas as pd
 from Logging import Logging
 
-
+character_lower_req = ['name','address','email','city','country','state','address','relation_type','phone_type','address_type']
 # from read_From_Fuse import order_df as fuse_order_df
 # from read_From_Fuse import order_name as name
 # from read_From_Fuse import order_address as address
@@ -162,6 +162,9 @@ def checkFrames(fuse_input_df,graph_input_df,type):
                     seen.append(id_val)
                     for column in graph_input_df:
                         if column != 'created_at' and column != 'updated_at':
+                            if column in character_lower_req:
+                                fuse_id_data[column].lower()
+                                graph_id_data[column].lower()
                             if fuse_id_data[column]!=graph_id_data[column]:
                                 create_missing_node_data(type, fuse_input_df.loc[id_val])
                 elif id_val not in seen:
